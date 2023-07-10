@@ -35,8 +35,8 @@
 				})
 				.then((response) => {
 					response.split('\r\n').forEach((address) => {
-						console.log(address);
 						let items = address.split(',');
+						console.log(items);
 						let city = items[0];
 						let street = items[2] + ' ' + items[1];
 						var url = `https://nominatim.openstreetmap.org/?format=json&country=netherlands&city=${city}&street=${street}`;
