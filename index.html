@@ -35,6 +35,7 @@
 				})
 				.then((response) => {
 					response.split('\r\n').forEach((address) => {
+						console.log(address);
 						let items = address.split(',');
 						let city = items[0];
 						let street = items[2] + ' ' + items[1];
