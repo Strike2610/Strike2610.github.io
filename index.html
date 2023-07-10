@@ -36,7 +36,6 @@
 				.then((response) => {
 					response.split('\n').forEach((address) => {
 						let items = address.split(',');
-						console.log(items);
 						let city = items[0];
 						let street = items[2] + ' ' + items[1];
 						var url = `https://nominatim.openstreetmap.org/?format=json&country=netherlands&city=${city}&street=${street}`;
@@ -44,13 +43,9 @@
 							.then((response) => {
 								if (!response.ok)
 									console.log('Something went wrong!');
-								else {
-									console.log(response);
-									return response.json();
-								}
+								else return response.json();
 							})
 							.then((response) => {
-								console.log(response);
 								L.marker([
 									response[0].lat,
 									response[0].lon,
