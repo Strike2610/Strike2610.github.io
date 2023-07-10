@@ -2,57 +2,11 @@
 <html lang="en">
 	<head>
 		<title>Op de Kaart</title>
-		<link
-			rel="stylesheet"
-			href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-			integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
-			crossorigin="" />
-		<script
-			src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
-			integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
-			crossorigin=""></script>
+		<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+		<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 	</head>
 	<body>
 		<div id="map" style="width: 800px; height: 1000px"></div>
-		<script>
-			const USE_NAMES = false;
-			const FILE = 'gebruikers.csv';
-
-			const map = L.map('map').setView([52.1, 5.2], 8);
-			const tiles = L.tileLayer(
-				'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-				{
-					maxZoom: 19,
-					attribution:
-						'&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
-				}
-			).addTo(map);
-
-			const reader = new FileReader(FILE);
-			fetch(FILE)
-				.then((response) => {
-					return response.text();
-				})
-				.then((response) => {
-					response.split('\n').forEach((address) => {
-						let items = address.split(',');
-						let city = items[0];
-						let street = items[2] + ' ' + items[1];
-						var url = `https://nominatim.openstreetmap.org/?format=json&country=netherlands&city=${city}&street=${street}`;
-						fetch(url)
-							.then((response) => {
-								if (!response.ok)
-									console.log('Something went wrong!');
-								else return response.json();
-							})
-							.then((response) => {
-								L.marker([
-									response[0].lat,
-									response[0].lon,
-								]).addTo(map);
-							});
-					});
-				});
-		</script>
+		<script src="app.js"></script>
 	</body>
 </html>
