@@ -1,29 +1,64 @@
 const USE_NAMES = false;
-const FILE = 'gebruikers.csv';
+const WORKERS = 'data/werknemers.csv';
+const OFFICES = 'data/kantoren.csv';
+const WORKSITES = 'data/werken.csv';
 
-const map = L.map('map').setView([52.1, 5.2], 8);
-const tiles = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-	maxZoom: 19,
-	attribution:
-		'&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
-}).addTo(map);
+const Shadow = L.Icon.extend({
+	options: {
+		shadowUrl: 'images/marker-shadow.png',
+		iconSize: [25, 41],
+		iconAnchor: [12, 41],
+		popupAnchor: [1, -34],
+		tooltipAnchor: [16, -28],
+		shadowSize: [41, 41],
+	},
+});
+const greenMarker = new Shadow({ iconUrl: 'images/marker-icon-green.png' }),
+	redMarker = new Shadow({ iconUrl: 'images/marker-icon-red.png' }),
+	blueMarker = new Shadow({ iconUrl: 'images/marker-icon-blue.png' });
 
-const reader = new FileReader(FILE);
-fetch(FILE)
-	.then(file => {
-		return file.text();
-	})
-	.then(readFile => {
-		readFile.split(/\r?\n/).forEach((address) => {
-			let items = address.split(',');
-			let url = `https://nominatim.openstreetmap.org/?format=json&country=netherlands&city=${items[0]}&street=${items[2] + ' ' + items[1]}`;
-			fetch(url)
-				.then(response => {
-					if (!response.ok) console.log('Something went wrong!');
-					else return response.json();
-				})
-				.then(result => {
-					L.marker([result[0].lat, result[0].lon]).addTo(map);
-				});
-		});
-	});
+document.addEventListener('DOMContentLoaded', appStart);
+async function appStart() {
+	const map = L.map('map').setView([52.1, 5.2], 8);
+	L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+		maxZoom: 19,
+		attribution:
+			'&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+	}).addTo(map);
+
+	await addMarkers(WORKERS, blueMarker, map);
+	// await addMarkers(OFFICES, greenMarker, map); // TODO: get official test data
+	// await addMarkers(WORKSITES, redMarker, map); // TODO: get official test data
+}
+
+async function addMarkers(fileLocation, marker, map) {
+	let file = await fetch(fileLocation),
+		readFile = await file.text(),
+		lines = readFile.split(/\r?\n/);
+	const promises = [];
+	for (const line of lines) {
+		promises.push(
+			new Promise(async (resolve, reject) => {
+				const location = await getMarkerLocation(line);
+				if (location) return resolve(location);
+				return reject();
+			})
+		);
+	}
+
+	for (const location of await Promise.all(promises)) {
+		L.marker(location, { icon: marker }).addTo(map);
+	}
+}
+
+async function getMarkerLocation(address) {
+	let items = address.split(',');
+	let locationUrl = `https://nominatim.openstreetmap.org/?format=json&country=netherlands&city=${
+		items[0]
+	}&street=${items[2] + '%20' + items[1]}`;
+	let location;
+	let returnData = await fetch(locationUrl);
+	if (!returnData.ok) console.log('Something went wrong!');
+	else location = await returnData.json();
+	return [location[0].lat, location[0].lon];
+}
