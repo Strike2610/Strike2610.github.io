@@ -27,8 +27,8 @@ async function appStart() {
 	}).addTo(map);
 
 	await addMarkers(WORKERS, blueMarker, map);
-	// await addMarkers(OFFICES, greenMarker, map); // TODO: get official test data
-	// await addMarkers(WORKSITES, redMarker, map); // TODO: get official test data
+	await addMarkers(OFFICES, greenMarker, map); // TODO: get official test data
+	await addMarkers(WORKSITES, redMarker, map); // TODO: get official test data
 }
 
 async function addMarkers(fileLocation, marker, map) {
