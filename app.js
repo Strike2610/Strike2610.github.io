@@ -27,7 +27,7 @@ async function appStart() {
 	}).addTo(map);
 
 	await addMarkers(WORKERS, blueMarker, map);
-	// await addMarkers(OFFICES, greenMarker, map);
+	await addMarkers(OFFICES, greenMarker, map);
 	// await addMarkers(WORKSITES, redMarker, map);
 }
 
