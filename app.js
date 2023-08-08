@@ -1,4 +1,4 @@
-const USE_NAMES = false;
+const USE_NAMES = true;
 const WORKERS = 'data/werknemers.csv';
 const OFFICES = 'data/kantoren.csv';
 const WORKSITES = 'data/werken.csv';
@@ -37,6 +37,10 @@ async function addMarkers(fileLocation, marker, map) {
 		lines = readFile.split(/\r?\n/);
 
 	for (const line of lines) {
-		L.marker(line.split(', '), { icon: marker }).addTo(map);
+		const items = line.split(';');
+		const pin = L.marker([items[0], items[1]], { icon: marker }).addTo(
+			map
+		);
+		if (USE_NAMES && line.length > 2) pin.bindPopup(items[2]);
 	}
 }
